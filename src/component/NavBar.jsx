@@ -1,9 +1,8 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { Menu, X, Home, Info, Users, Mail, LogOut, Loader2 } from 'lucide-react';
+import { Menu, X, Home, Info, Users, Mail, LogOut, Loader2, Search } from 'lucide-react';
 
-function NavBar() {
-    const [isOpen, setIsOpen] = useState(false);
+function NavBar({ isOpen, setIsOpen }) {
     const [loadingPath, setLoadingPath] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();

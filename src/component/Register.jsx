@@ -12,7 +12,7 @@ function Register() {
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
@@ -27,20 +27,28 @@ function Register() {
             return;
         }
 
-        // Add registration logic here (e.g., API call)
-        // For now, just redirect to login after registration
         try {
-            // In a real app, you would send this to your backend
-            // const response = await fetch('/api/register', { ... });
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userName: username, email, password })
+            });
             
-            // Store user data (in real app, this would come from backend)
-            const userData = { username, email };
-            localStorage.setItem('userData', JSON.stringify(userData));
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Registration failed');
+            }
             
             // Redirect to login page after successful registration
             navigate('/login');
         } catch (e) {
-            setError('Registration failed. Please try again.');
+            // Handle different types of errors
+            if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
+                setError('Unable to connect to server. Please ensure the backend server is running on port 5000.');
+            } else {
+                setError(e.message || 'Registration failed. Please try again.');
+            }
             console.error('Registration error:', e);
         }
     };
@@ -48,7 +56,7 @@ function Register() {
     return (
         <div className="register">
             <div className="centered-content">
-                <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: 'white' }}>
                     <UserPlus size={28} />
                     Register
                 </h3>
@@ -66,7 +74,7 @@ function Register() {
                 )}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', maxWidth: '300px' }}>
-                        <label htmlFor="username" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+                        <label htmlFor="username" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', color: 'white' }}>
                             <User size={18} /> Username:
                         </label>
                         <input
@@ -79,7 +87,7 @@ function Register() {
                         />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', maxWidth: '300px' }}>
-                        <label htmlFor="email" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+                        <label htmlFor="email" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', color: 'white' }}>
                             <Mail size={18} /> Email:
                         </label>
                         <input
@@ -92,7 +100,7 @@ function Register() {
                         />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', maxWidth: '300px' }}>
-                        <label htmlFor="password" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+                        <label htmlFor="password" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', color: 'white' }}>
                             <Lock size={18} /> Password:
                         </label>
                         <input
@@ -106,7 +114,7 @@ function Register() {
                         />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', maxWidth: '300px' }}>
-                        <label htmlFor="confirmPassword" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+                        <label htmlFor="confirmPassword" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', color: 'white' }}>
                             <Lock size={18} /> Confirm Password:
                         </label>
                         <input
@@ -122,7 +130,7 @@ function Register() {
                     <button type="submit" style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Key size={18} /> Register
                     </button>
-                    <div style={{ marginTop: '10px', textAlign: 'center' }}>
+                    <div style={{ marginTop: '10px', textAlign: 'center', color: 'white' }}>
                         <p>Already have an account?</p>
                         <Link to="/login" style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold' }}>
                             Login here

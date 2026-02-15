@@ -1,27 +1,31 @@
 import { Users, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
-function Team({ data }) {
+function Team() {
+    const [content, setContent] = useState(null);
+
+    useEffect(() => {
+        fetch('/api/content/team')
+            .then(res => res.json())
+            .then(data => setContent(data))
+            .catch(err => console.error('Error fetching team content:', err));
+    }, []);
+
+    if (!content) return <div className="loading">Loading...</div>;
+
     return (
         <div className="team">
             <div className="team-card">
                 <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                     <Users size={28} />
-                    {data?.title || "Our Team"}
+                    {content.header.title}
                 </h3>
-                <p className="team-description">{data?.description}</p>
                 <ul className="member-list">
-                    <li>
-                        <User size={18} /> <strong>Principal:</strong> Mr. Eric M.
-                    </li>
-                    <li>
-                        <User size={18} /> <strong>Vice Principal:</strong> Ms. Sarah K.
-                    </li>
-                    <li>
-                        <User size={18} /> <strong>Head of Technical Dept:</strong> Mr. John D.
-                    </li>
-                    <li>
-                        <User size={18} /> <strong>Head of Science Dept:</strong> Mrs. Jane S.
-                    </li>
+                    {content.members.list.map((member, idx) => (
+                        <li key={idx}>
+                            <User size={18} /> <strong>{member.role}:</strong> {member.name}
+                        </li>
+                    ))}
                 </ul>
             </div>
         </div>

@@ -30,6 +30,12 @@ body {
 
 .app-container.with-header .main-content {
   padding-top: 230px;
+  transition: margin-left 0.6s cubic-bezier(0.4, 0, 0.2, 1), padding-top 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-container.with-header.menu-open .main-content {
+  margin-left: 250px;
+  padding-top: 240px;
 }
 
 .nav-menu {
@@ -382,12 +388,14 @@ body {
 .contact-details {
   margin-top: 2rem;
   text-align: center;
-  color: white;
+  color: #2c3e50;
 }
 
 .contact-details p {
   margin: 0.5rem 0;
   font-size: 1.1rem;
+  color: #2c3e50;
+  font-weight: 600;
 }
 
 .login form div {
@@ -526,7 +534,6 @@ body {
 
 .loading-box {
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
   padding: 2rem;
   border-radius: 20px;
   display: flex;

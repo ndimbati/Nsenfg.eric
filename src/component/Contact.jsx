@@ -1,23 +1,34 @@
 import { Mail, MapPin, Phone } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
-function Contact({ data }) {
+function Contact() {
+    const [content, setContent] = useState(null);
+
+    useEffect(() => {
+        fetch('/api/content/contact')
+            .then(res => res.json())
+            .then(data => setContent(data))
+            .catch(err => console.error('Error fetching contact content:', err));
+    }, []);
+
+    if (!content) return <div className="loading">Loading...</div>;
+
     return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <div className="centered-content">
-                <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: 'white' }}>
                     <Mail size={28} />
-                    {data?.title || "Contact Us"}
+                    {content.header.title}
                 </h3>
-                <p style={{ textAlign: 'center' }}>{data?.description}</p>
                 <div className="contact-details">
-                    <p style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <MapPin size={20} /> <strong>Address:</strong> 123 Garden Avenue, Tech City
+                    <p style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'white', fontWeight: '600' }}>
+                        <MapPin size={20} /> <strong>Address:</strong> {content.details.address}
                     </p>
-                    <p style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Phone size={20} /> <strong>Phone:</strong> +260 977 123456
+                    <p style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'white', fontWeight: '600' }}>
+                        <Phone size={20} /> <strong>Phone:</strong> {content.details.phone}
                     </p>
-                    <p style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Mail size={20} /> <strong>Email:</strong> info@gardentss.edu.zm
+                    <p style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'white', fontWeight: '600' }}>
+                        <Mail size={20} /> <strong>Email:</strong> {content.details.email}
                     </p>
                 </div>
             </div>

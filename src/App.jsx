@@ -1,4 +1,5 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { useState } from 'react';
 import Header from "./component/Header";
 import Home from "./component/Home";
 import About from "./component/About";
@@ -12,13 +13,19 @@ import NotFound from "./component/NotFound";
 import Footer from "./component/Footer";
 import ErrorBoundary from "./component/ErrorBoundary";
 import ProtectedRoute from "./component/ProtectedRoute";
+import AdminProtectedRoute from "./component/admin/AdminProtectedRoute";
+import AdminLogin from "./component/admin/AdminLogin";
+import AdminDashboard from "./component/admin/AdminDashboard";
+import Search from "./component/Search";
 import { useAuth } from './context/AuthContext';
 import './App.css'
 
 function App() {
     const location = useLocation();
     const { isAuthenticated } = useAuth();
-    const showHeaderAndNav = isAuthenticated && (location.pathname === '/' || location.pathname === '/about' || location.pathname === '/team' || location.pathname === '/contact' || location.pathname === '/logout');
+    const [isOpen, setIsOpen] = useState(false);
+    const isAdminRoute = location.pathname.startsWith('/admin');
+    const showHeaderAndNav = !isAdminRoute && isAuthenticated && (location.pathname === '/' || location.pathname === '/about' || location.pathname === '/team' || location.pathname === '/contact' || location.pathname === '/search');
 
     const headerData = {
         title: "GARDEN TSS",
@@ -46,26 +53,36 @@ function App() {
     };
 
     return (
-        <div className={`app-container ${showHeaderAndNav ? 'with-header' : ''}`}>
+        <div className={`app-container ${showHeaderAndNav ? 'with-header' : ''} ${isOpen ? 'menu-open' : ''}`}>
             {showHeaderAndNav && <Header data={headerData} />}
             {showHeaderAndNav && (
                 <ErrorBoundary>
-                    <NavBar />
+                    <NavBar isOpen={isOpen} setIsOpen={setIsOpen} />
                 </ErrorBoundary>
             )}
             <div className="main-content">
                 <Routes>
+                    {/* Admin Routes */}
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin/dashboard" element={
+                        <AdminProtectedRoute>
+                            <AdminDashboard />
+                        </AdminProtectedRoute>
+                    } />
+                    
+                    {/* User Routes */}
                     <Route path="/" element={<ProtectedRoute><Home data={homeData} /></ProtectedRoute>} />
                     <Route path="/about" element={<ProtectedRoute><About data={aboutData} /></ProtectedRoute>} />
                     <Route path="/team" element={<ProtectedRoute><Team data={teamData} /></ProtectedRoute>} />
                     <Route path="/contact" element={<ProtectedRoute><Contact data={contactData} /></ProtectedRoute>} />
+                    <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
                     <Route path="/logout" element={<ProtectedRoute><Logout /></ProtectedRoute>} />
                     <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
                     <Route path="/register" element={isAuthenticated ? <Navigate to="/" replace /> : <Register />} />
                     <Route path="*" element={<ProtectedRoute><NotFound /></ProtectedRoute>} />
                 </Routes>
             </div>
-            <Footer />
+            {!isAdminRoute && location.pathname !== '/logout' && location.pathname !== '/login' && location.pathname !== '/register' && <Footer />}
         </div>
     );
 }

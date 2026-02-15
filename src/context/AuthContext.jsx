@@ -5,17 +5,28 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
         try {
-            return localStorage.getItem('isAuthenticated') === 'true';
+            return localStorage.getItem('token') !== null;
         } catch (e) {
             console.warn('Unable to access localStorage for auth flag', e);
             return false;
         }
     });
 
-    const login = () => {
+    const [user, setUser] = useState(() => {
         try {
-            localStorage.setItem('isAuthenticated', 'true');
+            const savedUser = localStorage.getItem('user');
+            return savedUser ? JSON.parse(savedUser) : null;
+        } catch (e) {
+            return null;
+        }
+    });
+
+    const login = (userData, token) => {
+        try {
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(userData));
             setIsAuthenticated(true);
+            setUser(userData);
         } catch (e) {
             console.warn('Unable to access localStorage for auth flag', e);
         }
@@ -23,15 +34,17 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         try {
-            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
             setIsAuthenticated(false);
+            setUser(null);
         } catch (e) {
             console.warn('Unable to access localStorage to clear auth flag', e);
         }
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

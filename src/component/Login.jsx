@@ -4,22 +4,50 @@ import { LogIn, User, Lock, Key, Loader2, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         setIsLoading(true);
         
-        // Simulate a small delay for the loading state
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        login();
-        setIsLoading(false);
-        navigate('/');
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            // Check if response is JSON
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Server error: Unexpected response format. Please ensure the backend is running correctly.");
+            }
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Login failed');
+            }
+            
+            login({ username: data.userName, email }, data.token);
+            navigate('/');
+        } catch (e) {
+            console.error('Login error:', e);
+            // Handle different types of errors
+            if (e.name === 'TypeError' || e.message.includes('fetch')) {
+                setError('Unable to connect to server. Please ensure the backend server is running (npm run dev in /server).');
+            } else {
+                setError(e.message);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -37,16 +65,28 @@ function Login() {
                     <LogIn size={28} />
                     Login
                 </h3>
+                {error && (
+                    <div style={{ 
+                        color: '#d32f2f', 
+                        backgroundColor: '#ffebee', 
+                        padding: '10px', 
+                        borderRadius: '4px', 
+                        marginBottom: '15px',
+                        textAlign: 'center'
+                    }}>
+                        {error}
+                    </div>
+                )}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', maxWidth: '300px' }}>
-                        <label htmlFor="username" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
-                            <User size={18} /> Username:
+                        <label htmlFor="email" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+                            <User size={18} /> Email:
                         </label>
                         <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                             style={{ width: '100%', padding: '8px' }}
                             disabled={isLoading}
