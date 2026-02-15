@@ -155,6 +155,7 @@ function ContentManager() {
                   required
                 >
                   <option value="">Select page</option>
+                  <option value="global">global</option>
                   <option value="home">home</option>
                   <option value="about">about</option>
                   <option value="team">team</option>
@@ -170,6 +171,7 @@ function ContentManager() {
                   required
                 >
                   <option value="">Select section</option>
+                  <option value="background">background</option>
                   <option value="hero">hero</option>
                   <option value="cards">cards</option>
                   <option value="users">users</option>

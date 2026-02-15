@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from "./component/Header";
 import Home from "./component/Home";
 import About from "./component/About";
@@ -27,6 +27,17 @@ function App() {
     const isAdminRoute = location.pathname.startsWith('/admin');
     const showHeaderAndNav = !isAdminRoute && isAuthenticated && (location.pathname === '/' || location.pathname === '/about' || location.pathname === '/team' || location.pathname === '/contact' || location.pathname === '/search');
 
+    useEffect(() => {
+        fetch('/api/content/global')
+            .then(res => res.json())
+            .then(data => {
+                if (data.background?.bgImage) {
+                    document.body.style.backgroundImage = `url(${data.background.bgImage})`;
+                }
+            })
+            .catch(err => console.error('Error fetching background:', err));
+    }, []);
+
     const headerData = {
         title: "GARDEN TSS",
         subtitle: "Technical Secondary School"
@@ -51,6 +62,16 @@ function App() {
         title: "Contact GARDEN TSS",
         description: "Reach out to us for admissions, inquiries, or partnerships. We are located in the heart of the community."
     };
+
+    const showFooter = !isAdminRoute && 
+                       location.pathname !== '/logout' && 
+                       location.pathname !== '/login' && 
+                       location.pathname !== '/register' && 
+                       (location.pathname === '/' || 
+                        location.pathname === '/about' || 
+                        location.pathname === '/team' || 
+                        location.pathname === '/contact' || 
+                        location.pathname === '/search');
 
     return (
         <div className={`app-container ${showHeaderAndNav ? 'with-header' : ''} ${isOpen ? 'menu-open' : ''}`}>
@@ -82,7 +103,7 @@ function App() {
                     <Route path="*" element={<ProtectedRoute><NotFound /></ProtectedRoute>} />
                 </Routes>
             </div>
-            {!isAdminRoute && location.pathname !== '/logout' && location.pathname !== '/login' && location.pathname !== '/register' && <Footer />}
+            {showFooter && <Footer />}
         </div>
     );
 }

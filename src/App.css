@@ -269,10 +269,11 @@ body {
   background: rgba(142, 179, 248, 0.8);
   border-radius: 15px;
   z-index: -1;
+  pointer-events: none;
 }
 
 
-.home:hover, .about:hover, .team:hover, .contact:hover, .login:hover, .logout:hover, .not-found:hover {
+.home:hover, .about:hover, .team:hover, .contact:hover, .login:hover, .logout:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 30px rgba(148, 209, 216, 0.5);
 }
