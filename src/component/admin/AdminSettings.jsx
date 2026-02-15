@@ -183,6 +183,7 @@ function AdminSettings() {
                 <th>ID</th>
                 <th>Username</th>
                 <th>Email</th>
+                <th>Password</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -226,6 +227,19 @@ function AdminSettings() {
                       />
                     ) : (
                       admin.email
+                    )}
+                  </td>
+                  <td>
+                    {editingId === admin.id ? (
+                      <input
+                        type="password"
+                        value={editForm.password}
+                        onChange={(e) => setEditForm({...editForm, password: e.target.value})}
+                        placeholder="New password"
+                        style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }}
+                      />
+                    ) : (
+                      <span style={{ fontFamily: 'monospace', color: '#95a5a6' }}>••••••••</span>
                     )}
                   </td>
                   <td>
